@@ -1,0 +1,17 @@
+Documentation:
+- Documenter le projet
+ - Objectifs
+ - Contraintes
+ - Configuration
+ - Etc
+ - Manuel d'installation
+ - Guide de l'utilisateur
+
+Graphisme/Design:
+ - Screenshots
+ - Logo (?)
+ - Page GitHub
+
+Développement:
+- Ajouter un fichier de configuration afin de pouvoir définir une configuration de sensors différente
+- Coder la routine de contrôle
