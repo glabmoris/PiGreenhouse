@@ -1,3 +1,15 @@
+<?php
+require_once('includes/bootstrap.inc');
+
+	$db = init_db();
+
+	$last_measurements = $db->query("SELECT PH,EC,TEMPERATURE,mtime FROM MEASUREMENTS ORDER BY mtime DESC LIMIT 1");
+	$measurement = $last_measurements->fetch(PDO::FETCH_OBJ);
+
+	$last_measurements_array = $db->query("SELECT PH,EC,TEMPERATURE,mtime FROM MEASUREMENTS ORDER BY mtime DESC LIMIT 100");
+	$measurements = $last_measurements_array->fetchAll(PDO::FETCH_OBJ);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -49,59 +61,6 @@
             </div>
             <!-- Top Menu Items -->
             <ul class="nav navbar-right top-nav">
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-envelope"></i> <b class="caret"></b></a>
-                    <ul class="dropdown-menu message-dropdown">
-                        <li class="message-preview">
-                            <a href="#">
-                                <div class="media">
-                                    <span class="pull-left">
-                                        <img class="media-object" src="http://placehold.it/50x50" alt="">
-                                    </span>
-                                    <div class="media-body">
-                                        <h5 class="media-heading"><strong>John Smith</strong>
-                                        </h5>
-                                        <p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
-                                        <p>Lorem ipsum dolor sit amet, consectetur...</p>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                        <li class="message-preview">
-                            <a href="#">
-                                <div class="media">
-                                    <span class="pull-left">
-                                        <img class="media-object" src="http://placehold.it/50x50" alt="">
-                                    </span>
-                                    <div class="media-body">
-                                        <h5 class="media-heading"><strong>John Smith</strong>
-                                        </h5>
-                                        <p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
-                                        <p>Lorem ipsum dolor sit amet, consectetur...</p>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                        <li class="message-preview">
-                            <a href="#">
-                                <div class="media">
-                                    <span class="pull-left">
-                                        <img class="media-object" src="http://placehold.it/50x50" alt="">
-                                    </span>
-                                    <div class="media-body">
-                                        <h5 class="media-heading"><strong>John Smith</strong>
-                                        </h5>
-                                        <p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
-                                        <p>Lorem ipsum dolor sit amet, consectetur...</p>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                        <li class="message-footer">
-                            <a href="#">Read All New Messages</a>
-                        </li>
-                    </ul>
-                </li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bell"></i> <b class="caret"></b></a>
                     <ul class="dropdown-menu alert-dropdown">
@@ -197,7 +156,7 @@
                 <!-- /.row -->
 
                 <div class="row">
-                    <div class="col-lg-3 col-md-6">
+                    <div class="col-lg-4 col-md-6">
                         <div class="panel panel-primary">
                             <div class="panel-heading">
                                 <div class="row">
@@ -205,12 +164,16 @@
                                         <i class="fa fa-sun-o fa-5x"></i>
                                     </div>
                                     <div class="col-xs-9 text-right">
-                                        <div class="huge">26</div>
+                                        <div class="huge">
+						<?php
+							echo $measurement->TEMPERATURE;
+						?>
+					</div>
                                         <div>&deg;Celsius</div>
                                     </div>
                                 </div>
                             </div>
-                            <a href="#">
+                            <a id="viewTemperature" href="#">
                                 <div class="panel-footer">
                                     <span class="pull-left">View Details</span>
                                     <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
@@ -219,7 +182,7 @@
                             </a>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6">
+                    <div class="col-lg-4 col-md-6">
                         <div class="panel panel-green">
                             <div class="panel-heading">
                                 <div class="row">
@@ -227,12 +190,16 @@
                                         <i class="fa fa-flask fa-5x"></i>
                                     </div>
                                     <div class="col-xs-9 text-right">
-                                        <div class="huge">12</div>
+                                        <div class="huge">
+					<?php
+						echo $measurement->PH;
+					?>
+					</div>
                                         <div>pH</div>
                                     </div>
                                 </div>
                             </div>
-                            <a href="#">
+                            <a id="viewPh" href="#">
                                 <div class="panel-footer">
                                     <span class="pull-left">View Details</span>
                                     <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
@@ -241,7 +208,7 @@
                             </a>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6">
+                    <div class="col-lg-4 col-md-6">
                         <div class="panel panel-yellow">
                             <div class="panel-heading">
                                 <div class="row">
@@ -249,34 +216,16 @@
                                         <i class="fa fa-bolt fa-5x"></i>
                                     </div>
                                     <div class="col-xs-9 text-right">
-                                        <div class="huge">124</div>
+                                        <div class="huge">
+						<?php
+							echo $measurement->EC;
+						?>
+					</div>
                                         <div>EC</div>
                                     </div>
                                 </div>
                             </div>
-                            <a href="#">
-                                <div class="panel-footer">
-                                    <span class="pull-left">View Details</span>
-                                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                                    <div class="clearfix"></div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="panel panel-red">
-                            <div class="panel-heading">
-                                <div class="row">
-                                    <div class="col-xs-3">
-                                        <i class="fa fa-support fa-5x"></i>
-                                    </div>
-                                    <div class="col-xs-9 text-right">
-                                        <div class="huge">13</div>
-                                        <div>Support Tickets!</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <a href="#">
+                            <a id="viewEc" href="#">
                                 <div class="panel-footer">
                                     <span class="pull-left">View Details</span>
                                     <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
@@ -291,6 +240,7 @@
                 <div class="row">
                     <div class="col-lg-12">
 	                    <!-- Temperature chart -->
+			    <div id="temperature-chart-wrapper" >
         	                    <div class="panel panel-default">
                 	                    <div class="panel-heading">
                         	                    <h3 class="panel-title"><i class="fa fa-sun-o fa-fw"></i> Temperature</h3>
@@ -299,9 +249,10 @@
                                 	            <div id="temperature-chart"></div>
                                             </div>
                                     </div>
-
+			    </div>
 
                             <!-- pH chart -->
+                            <div id="ph-chart-wrapper" >
                             	<div class="panel panel-default">
                                 	<div class="panel-heading">
                                         	<h3 class="panel-title"><i class="fa fa-flask fa-fw"></i> pH</h3>
@@ -310,7 +261,10 @@
                                         	<div id="ph-chart"></div>
                                         </div>
                                 </div>
+			    </div>
 
+                            <!-- EC chart -->
+                            <div id="ec-chart-wrapper" >
                             	<div class="panel panel-default">
                             		<div class="panel-heading">
                                         	<h3 class="panel-title"><i class="fa fa-bolt fa-fw"></i> Conductivity</h3>
@@ -319,143 +273,7 @@
                                 		<div id="ec-chart"></div>
                                 	</div>
                             	</div>
-                    </div>
-                </div>
-                <!-- /.row -->
-
-                <div class="row">
-                    <div class="col-lg-4">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><i class="fa fa-long-arrow-right fa-fw"></i> Donut Chart</h3>
-                            </div>
-                            <div class="panel-body">
-                                <div id="morris-donut-chart"></div>
-                                <div class="text-right">
-                                    <a href="#">View Details <i class="fa fa-arrow-circle-right"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><i class="fa fa-clock-o fa-fw"></i> Tasks Panel</h3>
-                            </div>
-                            <div class="panel-body">
-                                <div class="list-group">
-                                    <a href="#" class="list-group-item">
-                                        <span class="badge">just now</span>
-                                        <i class="fa fa-fw fa-calendar"></i> Calendar updated
-                                    </a>
-                                    <a href="#" class="list-group-item">
-                                        <span class="badge">4 minutes ago</span>
-                                        <i class="fa fa-fw fa-comment"></i> Commented on a post
-                                    </a>
-                                    <a href="#" class="list-group-item">
-                                        <span class="badge">23 minutes ago</span>
-                                        <i class="fa fa-fw fa-truck"></i> Order 392 shipped
-                                    </a>
-                                    <a href="#" class="list-group-item">
-                                        <span class="badge">46 minutes ago</span>
-                                        <i class="fa fa-fw fa-money"></i> Invoice 653 has been paid
-                                    </a>
-                                    <a href="#" class="list-group-item">
-                                        <span class="badge">1 hour ago</span>
-                                        <i class="fa fa-fw fa-user"></i> A new user has been added
-                                    </a>
-                                    <a href="#" class="list-group-item">
-                                        <span class="badge">2 hours ago</span>
-                                        <i class="fa fa-fw fa-check"></i> Completed task: "pick up dry cleaning"
-                                    </a>
-                                    <a href="#" class="list-group-item">
-                                        <span class="badge">yesterday</span>
-                                        <i class="fa fa-fw fa-globe"></i> Saved the world
-                                    </a>
-                                    <a href="#" class="list-group-item">
-                                        <span class="badge">two days ago</span>
-                                        <i class="fa fa-fw fa-check"></i> Completed task: "fix error on sales page"
-                                    </a>
-                                </div>
-                                <div class="text-right">
-                                    <a href="#">View All Activity <i class="fa fa-arrow-circle-right"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><i class="fa fa-money fa-fw"></i> Transactions Panel</h3>
-                            </div>
-                            <div class="panel-body">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-hover table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Order #</th>
-                                                <th>Order Date</th>
-                                                <th>Order Time</th>
-                                                <th>Amount (USD)</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>3326</td>
-                                                <td>10/21/2013</td>
-                                                <td>3:29 PM</td>
-                                                <td>$321.33</td>
-                                            </tr>
-                                            <tr>
-                                                <td>3325</td>
-                                                <td>10/21/2013</td>
-                                                <td>3:20 PM</td>
-                                                <td>$234.34</td>
-                                            </tr>
-                                            <tr>
-                                                <td>3324</td>
-                                                <td>10/21/2013</td>
-                                                <td>3:03 PM</td>
-                                                <td>$724.17</td>
-                                            </tr>
-                                            <tr>
-                                                <td>3323</td>
-                                                <td>10/21/2013</td>
-                                                <td>3:00 PM</td>
-                                                <td>$23.71</td>
-                                            </tr>
-                                            <tr>
-                                                <td>3322</td>
-                                                <td>10/21/2013</td>
-                                                <td>2:49 PM</td>
-                                                <td>$8345.23</td>
-                                            </tr>
-                                            <tr>
-                                                <td>3321</td>
-                                                <td>10/21/2013</td>
-                                                <td>2:23 PM</td>
-                                                <td>$245.12</td>
-                                            </tr>
-                                            <tr>
-                                                <td>3320</td>
-                                                <td>10/21/2013</td>
-                                                <td>2:15 PM</td>
-                                                <td>$5663.54</td>
-                                            </tr>
-                                            <tr>
-                                                <td>3319</td>
-                                                <td>10/21/2013</td>
-                                                <td>2:13 PM</td>
-                                                <td>$943.45</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="text-right">
-                                    <a href="#">View All Transactions <i class="fa fa-arrow-circle-right"></i></a>
-                                </div>
-                            </div>
-                        </div>
+			    </div>
                     </div>
                 </div>
                 <!-- /.row -->
@@ -483,12 +301,12 @@
         Morris.Area({
                 element: 'temperature-chart',
                 data: [
-                        {d: '2015-06-20 08:00',temp: 26},
-                        {d: '2015-06-20 08:01',temp: 27},
-                        {d: '2015-06-20 08:02',temp: 26},
-                        {d: '2015-06-20 08:03',temp: 25},
-                        {d: '2015-06-20 08:04',temp: 28},
-                        {d: '2015-06-20 08:05',temp: 29}
+			<?php
+				foreach($measurements as $k=>$v){
+					echo "{d: '$v->mtime',temp:$v->TEMPERATURE},";
+				}
+
+			?>
                 ],
 
                 xkey: 'd',
@@ -502,12 +320,12 @@
         Morris.Area({
                 element: 'ph-chart',
                 data: [
-                        {d: '2015-06-20 08:00',ph: 5.5},
-                        {d: '2015-06-20 08:01',ph: 5.5},
-                        {d: '2015-06-20 08:02',ph: 5.6},
-                        {d: '2015-06-20 08:03',ph: 5.6},
-                        {d: '2015-06-20 08:04',ph: 5.7},
-                        {d: '2015-06-20 08:05',ph: 5.7}
+                        <?php
+                                foreach($measurements as $k=>$v){
+                                        echo "{d: '$v->mtime',ph:$v->PH},";
+                                }
+
+                        ?>
                 ],
 
                 xkey: 'd',
@@ -521,23 +339,49 @@
         Morris.Area({
                 element: 'ec-chart',
                 data: [
-                        {d: '2015-06-20 08:00',ph: 1.5},
-                        {d: '2015-06-20 08:01',ph: 1.4},
-                        {d: '2015-06-20 08:02',ph: 1.5},
-                        {d: '2015-06-20 08:03',ph: 1.6},
-                        {d: '2015-06-20 08:04',ph: 1.3},
-                        {d: '2015-06-20 08:05',ph: 1.1}
+                        <?php
+                                foreach($measurements as $k=>$v){
+                                        echo "{d: '$v->mtime',ec:$v->EC},";
+                                }
+
+                        ?>
                 ],
 
                 xkey: 'd',
-                ykeys: ['ph'],
-                labels: ['pH'],
+                ykeys: ['ec'],
+                labels: ['EC'],
                 pointSize: 2,
                 hideHover: 'auto',
                 resize: true
+        });
+
+
+	//Scrolling handlers
+	$("#viewTemperature").click(function() {
+		$('html, body').animate({
+	        	scrollTop: $("#temperature-chart-wrapper").offset().top
+    		}, 500);
+	});
+
+
+        $("#viewPh").click(function() {
+                $('html, body').animate({
+                        scrollTop: $("#ph-chart-wrapper").offset().top
+                }, 500);
+        });
+
+        $("#viewEc").click(function() {
+                $('html, body').animate({
+                        scrollTop: $("#ec-chart-wrapper").offset().top
+                }, 500);
         });
 
     </script>
 </body>
 
 </html>
+
+<?php
+	$last_measurements->closeCursor();
+	$last_measurements_array->closeCursor();
+?>
