@@ -3,11 +3,20 @@ require_once('includes/bootstrap.inc');
 
 	$db = init_db();
 
-	$last_measurements = $db->query("SELECT PH,EC,TEMPERATURE,mtime FROM MEASUREMENTS ORDER BY mtime DESC LIMIT 1");
-	$measurement = $last_measurements->fetch(PDO::FETCH_OBJ);
+	$sensors = $db->query('SELECT SENSOR_TYPE,ID,DESCRIPTION FROM SENSORS')->fetchAll(PDO::FETCH_ASSOC);
 
-	$last_measurements_array = $db->query("SELECT PH,EC,TEMPERATURE,mtime FROM MEASUREMENTS ORDER BY mtime DESC LIMIT 100");
-	$measurements = $last_measurements_array->fetchAll(PDO::FETCH_OBJ);
+	//print_r($sensors);
+
+	$measurements = [];
+
+	foreach($sensors as $k=>$s){
+		//TODO get measurements
+		$q = $db->prepare('SELECT mtime,VALUE FROM MEASUREMENTS WHERE SENSOR_ID=:sid ORDER BY mtime DESC LIMIT 100'); //TODO: make horizon tweakale
+		$q->execute(array(':sid' => $s['ID'] ) );
+		$measurements[$s['ID']] = $q->fetchAll(PDO::FETCH_ASSOC);
+	}
+
+	print_r($measurements);
 ?>
 
 <!DOCTYPE html>
@@ -302,9 +311,9 @@ require_once('includes/bootstrap.inc');
                 element: 'temperature-chart',
                 data: [
 			<?php
-				foreach($measurements as $k=>$v){
-					echo "{d: '$v->mtime',temp:$v->TEMPERATURE},";
-				}
+				//foreach($measurements[1] as $v){
+				//	echo "{d: $v['mtime'],temp:$v['VALUE']},";
+				//}
 
 			?>
                 ],
@@ -317,44 +326,6 @@ require_once('includes/bootstrap.inc');
                 resize: true
         });
 
-        Morris.Area({
-                element: 'ph-chart',
-                data: [
-                        <?php
-                                foreach($measurements as $k=>$v){
-                                        echo "{d: '$v->mtime',ph:$v->PH},";
-                                }
-
-                        ?>
-                ],
-
-                xkey: 'd',
-                ykeys: ['ph'],
-                labels: ['pH'],
-                pointSize: 2,
-                hideHover: 'auto',
-                resize: true
-        });
-
-        Morris.Area({
-                element: 'ec-chart',
-                data: [
-                        <?php
-                                foreach($measurements as $k=>$v){
-                                        echo "{d: '$v->mtime',ec:$v->EC},";
-                                }
-
-                        ?>
-                ],
-
-                xkey: 'd',
-                ykeys: ['ec'],
-                labels: ['EC'],
-                pointSize: 2,
-                hideHover: 'auto',
-                resize: true
-        });
-
 
 	//Scrolling handlers
 	$("#viewTemperature").click(function() {
@@ -362,19 +333,6 @@ require_once('includes/bootstrap.inc');
 	        	scrollTop: $("#temperature-chart-wrapper").offset().top
     		}, 500);
 	});
-
-
-        $("#viewPh").click(function() {
-                $('html, body').animate({
-                        scrollTop: $("#ph-chart-wrapper").offset().top
-                }, 500);
-        });
-
-        $("#viewEc").click(function() {
-                $('html, body').animate({
-                        scrollTop: $("#ec-chart-wrapper").offset().top
-                }, 500);
-        });
 
     </script>
 </body>

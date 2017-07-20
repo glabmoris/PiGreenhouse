@@ -3,7 +3,7 @@
 function init_db(){
 	try{
 		//Open DB handle
-		$db = new PDO('mysql:host=localhost;dbname=pigarden;charset=utf8', 'root', 'SuperDatabase42$');
+		$db = new PDO('mysql:host=localhost;dbname=pigarden;charset=utf8', 'pigarden', 'SuperGarden42$');
 		$db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );//Error Handling
 		return $db;
 	} 
