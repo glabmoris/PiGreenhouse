@@ -13,16 +13,17 @@ require_once('includes/bootstrap.inc');
 
 	//print_r($sensors);
 
-	$measurements = [];
-
 	foreach($sensors as $k=>$s){
-		//get measurements
-		$q = $db->prepare('SELECT mtime,VALUE FROM MEASUREMENTS WHERE SENSOR_ID=:sid ORDER BY mtime DESC LIMIT 100'); //TODO: make horizon tweakale
-		$q->execute(array(':sid' => $s[0]['ID'] ) );
-		$s[0]['DATA'] = $q->fetchAll(PDO::FETCH_ASSOC);
+            //get measurements
+            $q = $db->prepare('SELECT mtime,VALUE FROM MEASUREMENTS WHERE SENSOR_ID=:sid ORDER BY mtime DESC LIMIT 100'); //TODO: make horizon tweakale
+            $q->execute(array(':sid' => $s[0]['ID'] ) );
+            print_r($s);
+            foreach($q->fetchAll(PDO::FETCH_ASSOC) as $row){
+                $s[0]['DATA'][] = $row;
+            }
 	}
 
-	print_r($sensors);
+	//print_r($sensors);
 ?>
 
 <!DOCTYPE html>
