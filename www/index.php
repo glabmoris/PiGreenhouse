@@ -1,29 +1,25 @@
 <?php
-require_once('includes/bootstrap.inc');
+    require_once('includes/bootstrap.inc');
 
-	$db = init_db();
+    $db = init_db();
 
-	$res = $db->query('SELECT SENSOR_TYPE,ID,DESCRIPTION FROM SENSORS')->fetchAll(PDO::FETCH_ASSOC);
-	
-	$sensors=[];
-	//TODO: maybe PDO can help make an SENSOR_TYPE-keyed array without this
-	foreach($res as $k=>$v){
-		$sensors[$v['SENSOR_TYPE']][] = $v;
-	}
+    $res = $db->query('SELECT SENSOR_TYPE,ID,DESCRIPTION FROM SENSORS')->fetchAll(PDO::FETCH_ASSOC);
 
-	//print_r($sensors);
+    $sensors=[];
+    //TODO: maybe PDO can help make an SENSOR_TYPE-keyed array without this
+    foreach($res as $k=>$v){
+            $sensors[$v['SENSOR_TYPE']][] = $v;
+    }
 
-	foreach($sensors as $k=>$s){
-            //get measurements
-            $q = $db->prepare('SELECT mtime,VALUE FROM MEASUREMENTS WHERE SENSOR_ID=:sid ORDER BY mtime DESC LIMIT 100'); //TODO: make horizon tweakale
-            $q->execute(array(':sid' => $s[0]['ID'] ) );
-            print_r($s);
-            foreach($q->fetchAll(PDO::FETCH_ASSOC) as $row){
-                $s[0]['DATA'][] = $row;
-            }
-	}
+    foreach($sensors as $k=>$s){
+        //get measurements
+        $q = $db->prepare('SELECT mtime,VALUE FROM MEASUREMENTS WHERE SENSOR_ID=:sid ORDER BY mtime DESC LIMIT 100'); //TODO: make horizon tweakale
+        $q->execute(array(':sid' => $s[0]['ID'] ) );
 
-	//print_r($sensors);
+        $sensors[$k][0]['DATA'][] = $q->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    //print_r($sensors);
 ?>
 
 <!DOCTYPE html>
@@ -182,7 +178,8 @@ require_once('includes/bootstrap.inc');
                                     <div class="col-xs-9 text-right">
                                         <div class="huge">
 						<?php
-							echo $measurement->TEMPERATURE;
+                                                    //FIXME: Loop over the $sensors data struct and dynamically add those columns depending on the sensors found
+                                                    echo $sensors['Temperature'][0]['DATA'][0][0]['VALUE'];
 						?>
 					</div>
                                         <div>&deg;Celsius</div>
@@ -203,19 +200,20 @@ require_once('includes/bootstrap.inc');
                             <div class="panel-heading">
                                 <div class="row">
                                     <div class="col-xs-3">
-                                        <i class="fa fa-flask fa-5x"></i>
+                                        <i class="fa fa-tint fa-5x"></i>
                                     </div>
                                     <div class="col-xs-9 text-right">
                                         <div class="huge">
-					<?php
-						echo $measurement->PH;
-					?>
+                                            <?php
+                                                //FIXME: Loop over the $sensors data struct and dynamically add those columns depending on the sensors found
+                                                echo $sensors['Humidity'][0]['DATA'][0][0]['VALUE'];
+                                            ?>
 					</div>
-                                        <div>pH</div>
+                                        <div>% Humidity</div>
                                     </div>
                                 </div>
                             </div>
-                            <a id="viewPh" href="#">
+                            <a id="viewHumidity" href="#">
                                 <div class="panel-footer">
                                     <span class="pull-left">View Details</span>
                                     <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
@@ -224,32 +222,7 @@ require_once('includes/bootstrap.inc');
                             </a>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-6">
-                        <div class="panel panel-yellow">
-                            <div class="panel-heading">
-                                <div class="row">
-                                    <div class="col-xs-3">
-                                        <i class="fa fa-bolt fa-5x"></i>
-                                    </div>
-                                    <div class="col-xs-9 text-right">
-                                        <div class="huge">
-						<?php
-							echo $measurement->EC;
-						?>
-					</div>
-                                        <div>EC</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <a id="viewEc" href="#">
-                                <div class="panel-footer">
-                                    <span class="pull-left">View Details</span>
-                                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                                    <div class="clearfix"></div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
+
                 </div>
                 <!-- /.row -->
 
@@ -268,27 +241,15 @@ require_once('includes/bootstrap.inc');
 			    </div>
 
                             <!-- pH chart -->
-                            <div id="ph-chart-wrapper" >
+                            <div id="humidity-chart-wrapper" >
                             	<div class="panel panel-default">
                                 	<div class="panel-heading">
-                                        	<h3 class="panel-title"><i class="fa fa-flask fa-fw"></i> pH</h3>
+                                        	<h3 class="panel-title"><i class="fa fa-tint fa-fw"></i> Humidity</h3>
                                         </div>
                                         <div class="panel-body">
-                                        	<div id="ph-chart"></div>
+                                        	<div id="humidity-chart"></div>
                                         </div>
                                 </div>
-			    </div>
-
-                            <!-- EC chart -->
-                            <div id="ec-chart-wrapper" >
-                            	<div class="panel panel-default">
-                            		<div class="panel-heading">
-                                        	<h3 class="panel-title"><i class="fa fa-bolt fa-fw"></i> Conductivity</h3>
-                                        </div>
-                                	<div class="panel-body">
-                                		<div id="ec-chart"></div>
-                                	</div>
-                            	</div>
 			    </div>
                     </div>
                 </div>
@@ -318,9 +279,14 @@ require_once('includes/bootstrap.inc');
                 element: 'temperature-chart',
                 data: [
 			<?php
-				//foreach($measurements[1] as $v){
-				//	echo "{d: $v['mtime'],temp:$v['VALUE']},";
-				//}
+				foreach($sensors['Temperature'] as $k=>$sensor){
+                                    //print_r($sensor['DATA']);
+                                    foreach($sensor['DATA'][0] as $kk=>$measurement){
+                                        //print("---------");
+                                        //print_r($measurement);
+					echo "{d:'" . $measurement['mtime'] . "',temp:" . $measurement['VALUE']. "},";
+                                    }
+				}
 
 			?>
                 ],
@@ -332,6 +298,30 @@ require_once('includes/bootstrap.inc');
                 hideHover: 'auto',
                 resize: true
         });
+        
+        Morris.Area({
+                element: 'humidity-chart',
+                data: [
+			<?php
+				foreach($sensors['Humidity'] as $k=>$sensor){
+                                    //print_r($sensor['DATA']);
+                                    foreach($sensor['DATA'][0] as $kk=>$measurement){
+                                        //print("---------");
+                                        //print_r($measurement);
+					echo "{d:'" . $measurement['mtime'] . "',temp:" . $measurement['VALUE']. "},";
+                                    }
+				}
+
+			?>
+                ],
+
+                xkey: 'd',
+                ykeys: ['temp'],
+		labels: ['Temperature'],
+                pointSize: 2,
+                hideHover: 'auto',
+                resize: true
+        });        
 
 
 	//Scrolling handlers
@@ -340,6 +330,12 @@ require_once('includes/bootstrap.inc');
 	        	scrollTop: $("#temperature-chart-wrapper").offset().top
     		}, 500);
 	});
+        
+	$("#viewHumidity").click(function() {
+		$('html, body').animate({
+	        	scrollTop: $("#humidity-chart-wrapper").offset().top
+    		}, 500);
+	});        
 
     </script>
 </body>
