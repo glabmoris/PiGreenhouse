@@ -3,20 +3,26 @@ require_once('includes/bootstrap.inc');
 
 	$db = init_db();
 
-	$sensors = $db->query('SELECT SENSOR_TYPE,ID,DESCRIPTION FROM SENSORS')->fetchAll(PDO::FETCH_ASSOC);
+	$res = $db->query('SELECT SENSOR_TYPE,ID,DESCRIPTION FROM SENSORS')->fetchAll(PDO::FETCH_ASSOC);
+	
+	$sensors=[];
+	//TODO: maybe PDO can help make an SENSOR_TYPE-keyed array without this
+	foreach($res as $k=>$v){
+		$sensors[$v['SENSOR_TYPE']][] = $v;
+	}
 
 	//print_r($sensors);
 
 	$measurements = [];
 
 	foreach($sensors as $k=>$s){
-		//TODO get measurements
+		//get measurements
 		$q = $db->prepare('SELECT mtime,VALUE FROM MEASUREMENTS WHERE SENSOR_ID=:sid ORDER BY mtime DESC LIMIT 100'); //TODO: make horizon tweakale
-		$q->execute(array(':sid' => $s['ID'] ) );
-		$measurements[$s['ID']] = $q->fetchAll(PDO::FETCH_ASSOC);
+		$q->execute(array(':sid' => $s[0]['ID'] ) );
+		$s[0]['DATA'] = $q->fetchAll(PDO::FETCH_ASSOC);
 	}
 
-	print_r($measurements);
+	print_r($sensors);
 ?>
 
 <!DOCTYPE html>
