@@ -168,7 +168,7 @@
                 <!-- /.row -->
 
                 <div class="row">
-                    <div class="col-lg-4 col-md-6">
+                    <div class="col-lg-3 col-md-6">
                         <div class="panel panel-primary">
                             <div class="panel-heading">
                                 <div class="row">
@@ -179,7 +179,7 @@
                                         <div class="huge">
 						<?php
                                                     //FIXME: Loop over the $sensors data struct and dynamically add those columns depending on the sensors found
-                                                    echo $sensors['Temperature'][0]['DATA'][0][0]['VALUE'];
+                                                    echo ($sensors['Temperature'][0]['DATA'][0][0]['VALUE']?$sensors['Temperature'][0]['DATA'][0][0]['VALUE']:'--');
 						?>
 					</div>
                                         <div>&deg;Celsius</div>
@@ -195,7 +195,7 @@
                             </a>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-6">
+                    <div class="col-lg-3 col-md-6">
                         <div class="panel panel-green">
                             <div class="panel-heading">
                                 <div class="row">
@@ -222,6 +222,60 @@
                             </a>
                         </div>
                     </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="panel panel-yellow">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <i class="fa fa-flask fa-5x"></i>
+                                    </div>
+                                    <div class="col-xs-9 text-right">
+                                        <div class="huge">
+                                            <?php
+                                                //FIXME: Loop over the $sensors data struct and dynamically add those columns depending on the sensors found
+                                                echo ($sensors['PH'][0]['DATA'][0][0]['VALUE']?$sensors['PH'][0]['DATA'][0][0]['VALUE']:'--');
+                                            ?>
+					</div>
+                                        <div>pH</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a id="viewPh" href="#">
+                                <div class="panel-footer">
+                                    <span class="pull-left">View Details</span>
+                                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="panel panel-red">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <i class="fa fa-bolt fa-5x"></i>
+                                    </div>
+                                    <div class="col-xs-9 text-right">
+                                        <div class="huge">
+                                            <?php
+                                                //FIXME: Loop over the $sensors data struct and dynamically add those columns depending on the sensors found
+                                                echo ($sensors['EC'][0]['DATA'][0][0]['VALUE']?$sensors['EC'][0]['DATA'][0][0]['VALUE']:'--');
+                                            ?>
+					</div>
+                                        <div>EC</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a id="viewEC" href="#">
+                                <div class="panel-footer">
+                                    <span class="pull-left">View Details</span>
+                                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>                    
 
                 </div>
                 <!-- /.row -->
@@ -240,7 +294,7 @@
                                     </div>
 			    </div>
 
-                            <!-- pH chart -->
+                            <!-- Humidity chart -->
                             <div id="humidity-chart-wrapper" >
                             	<div class="panel panel-default">
                                 	<div class="panel-heading">
@@ -251,6 +305,32 @@
                                         </div>
                                 </div>
 			    </div>
+                            
+
+                            <!-- pH chart -->
+                            <div id="ph-chart-wrapper" >
+                            	<div class="panel panel-default">
+                                	<div class="panel-heading">
+                                        	<h3 class="panel-title"><i class="fa fa-flask fa-fw"></i> pH</h3>
+                                        </div>
+                                        <div class="panel-body">
+                                        	<div id="ph-chart"></div>
+                                        </div>
+                                </div>
+			    </div>
+                            
+
+                            <!-- EC chart -->
+                            <div id="ec-chart-wrapper" >
+                            	<div class="panel panel-default">
+                                	<div class="panel-heading">
+                                        	<h3 class="panel-title"><i class="fa fa-bolt fa-fw"></i> EC</h3>
+                                        </div>
+                                        <div class="panel-body">
+                                        	<div id="ec-chart"></div>
+                                        </div>
+                                </div>
+			    </div>                            
                     </div>
                 </div>
                 <!-- /.row -->
@@ -308,7 +388,7 @@
                                     foreach($sensor['DATA'][0] as $kk=>$measurement){
                                         //print("---------");
                                         //print_r($measurement);
-					echo "{d:'" . $measurement['mtime'] . "',temp:" . $measurement['VALUE']. "},";
+					echo "{d:'" . $measurement['mtime'] . "',percent:" . $measurement['VALUE']. "},";
                                     }
 				}
 
@@ -316,12 +396,60 @@
                 ],
 
                 xkey: 'd',
-                ykeys: ['temp'],
+                ykeys: ['percent'],
 		labels: ['Temperature'],
+                lineColors: ['#5cb85c'],
                 pointSize: 2,
                 hideHover: 'auto',
                 resize: true
         });        
+        
+        Morris.Area({
+                element: 'ph-chart',
+                data: [
+			<?php
+				foreach($sensors['pH'] as $k=>$sensor){
+                                    //print_r($sensor['DATA']);
+                                    foreach($sensor['DATA'][0] as $kk=>$measurement){
+                                        //print("---------");
+                                        //print_r($measurement);
+					echo "{d:'" . $measurement['mtime'] . "',ph:" . $measurement['VALUE']. "},";
+                                    }
+				}
+
+			?>
+                ],
+
+                xkey: 'd',
+                ykeys: ['ph'],
+		labels: ['pH'],
+                lineColors: ['#f0ad4e'],
+                pointSize: 2,
+                hideHover: 'auto',
+                resize: true
+        });          
+        
+        Morris.Area({
+                element: 'ec-chart',
+                data: [
+			<?php
+				foreach($sensors['EC'] as $k=>$sensor){
+                                    foreach($sensor['DATA'][0] as $kk=>$measurement){
+					echo "{d:'" . $measurement['mtime'] . "',ec:" . $measurement['VALUE']. "},";
+                                    }
+				}
+
+			?>
+                ],
+
+                xkey: 'd',
+                ykeys: ['ec'],
+		labels: ['EC'],
+                lineColors: ['#d9534f'],
+                pointSize: 2,
+                hideHover: 'auto',
+                resize: true
+        });         
 
 
 	//Scrolling handlers
@@ -334,6 +462,18 @@
 	$("#viewHumidity").click(function() {
 		$('html, body').animate({
 	        	scrollTop: $("#humidity-chart-wrapper").offset().top
+    		}, 500);
+	});   
+        
+	$("#viewPh").click(function() {
+		$('html, body').animate({
+	        	scrollTop: $("#ph-chart-wrapper").offset().top
+    		}, 500);
+	});
+        
+	$("#viewEC").click(function() {
+		$('html, body').animate({
+	        	scrollTop: $("#ec-chart-wrapper").offset().top
     		}, 500);
 	});        
 
