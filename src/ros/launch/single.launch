@@ -1,5 +1,7 @@
 <launch>
 	<!-- Temperature / humidity //-->
 	<node pkg="am2315" type="am2315_node" name="am2315_node"/>
-
+	
+        <!-- Logging //-->
+        <node pkg="log_text" type="log_text" name="log_text"/>
 </launch>

@@ -1,0 +1,8 @@
+prefix=/home/ubuntu/PiGreenhouse/src/ros/devel
+
+Name: log_text
+Description: Description of log_text
+Version: 1.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
