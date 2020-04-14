@@ -1,0 +1,5 @@
+<launch>
+	<!-- Temperature / humidity //-->
+	<node pkg="am2315" type="am2315_node" name="am2315_node"/>
+
+</launch>
