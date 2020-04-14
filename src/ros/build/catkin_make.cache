@@ -1,2 +1,0 @@
-am2315
--DCATKIN_DEVEL_PREFIX=/home/ubuntu/PiGreenhouse/src/ros/devel -DCMAKE_INSTALL_PREFIX=/home/ubuntu/PiGreenhouse/src/ros/install -G Unix Makefiles
